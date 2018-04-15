@@ -66,7 +66,7 @@ fetch(input, init).then(function(response) { ... });
 var abort_fn = null;
 var abort_promise = new Promise(function(resolve, reject) {
     abort_fn = function() {
-      reject('abort promise');
+        reject('abort promise');
     };
  });
  ```
@@ -88,24 +88,23 @@ Promise.race(iterable)方法返回一个promise，这个promise在iterable中的
 ```javascript
 function abortablePromise(fetch_promise) {
 
-  var abort_fn = null;
+    var abort_fn = null;
 
-  //这是一个可以被reject的promise
-  var abort_promise = new Promise(function(resolve, reject) {
-    abort_fn = function() {
-      reject('abort promise');
-    };
-  });
+    // 这是一个可以被reject的promise
+    var abort_promise = new Promise(function(resolve, reject) {
+        abort_fn = function() {
+            reject('abort promise');
+        };
+    });
 
-  //这里使用Promise.race，以最快 resolve 或 reject 的结果来传入后续绑定的回调
-  var abortable_promise = Promise.race([
-      fetch_promise,
-      abort_promise
-  ]);
+    // 这里使用Promise.race，以最快 resolve 或 reject 的结果来传入后续绑定的回调
+    var abortable_promise = Promise.race([
+        fetch_promise,
+        abort_promise
+    ]);
 
-  abortable_promise.abort = abort_fn;
-
-  return abortable_promise;
+    abortable_promise.abort = abort_fn;
+    return abortable_promise;
 }
 ```
 
@@ -113,16 +112,23 @@ function abortablePromise(fetch_promise) {
 
 ```javascript
 var p = abortablePromise(fetch('//a.com/b/c'));
-p.then(function(res) {
-    console.log(res)
-}, function(err) {
-    console.log(err);
-});
+
+p.then(
+    function(res) {
+        console.log(res)
+    },
+    function(err) {
+        console.log(err);
+    }
+);
 
 //假设fetch要3秒，但是你想在2秒就放弃了：
-setTimeout(function() {
-    p.abort(); // -> will print "abort promise"
-}, 2000);
+setTimeout(
+    function() {
+        p.abort(); // -> will print "abort promise"
+    }, 
+    2000
+);
 ```
 
 目前为止，大体功能已经实现，再稍微调整，让调用更方便：
@@ -130,30 +136,33 @@ setTimeout(function() {
 ```javascript
 _fetch(fetch('//a.com/b/c'), 2000)
 	.then(function(res) {
-       	 	console.log(res)
-    	}, function(err) {
-        	console.log(err);
+       	console.log(res)
+    }, function(err) {
+        console.log(err);
 	}
 );
 function _fetch(fetch_promise, timeout) {
 	var abort_fn = null;
 	//这是一个可以被reject的promise
-      	var abort_promise = new Promise(function(resolve, reject) {
-             	abort_fn = function() {
-        		reject('abort promise');
-         	};
+    var abort_promise = new Promise(function(resolve, reject) {
+        abort_fn = function() {
+            reject('abort promise');
+        };
 	});
 
-      // 这里使用Promise.race，以最快 resolve 或 reject 的结果来传入后续绑定的回调
-      	var abortable_promise = Promise.race([
-        	fetch_promise,
-             	abort_promise
-       ]);
-       setTimeout(function() {
-             	abort_fn();
-        }, timeout);
+    // 这里使用Promise.race，以最快 resolve 或 reject 的结果来传入后续绑定的回调
+    var abortable_promise = Promise.race([
+        fetch_promise,
+        abort_promise
+    ]);
+    setTimeout(
+        function() {
+            abort_fn();
+        }, 
+        timeout
+    );
 
-       return abortable_promise;
+    return abortable_promise;
 }
 ```
 
