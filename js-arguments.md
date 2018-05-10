@@ -183,4 +183,3 @@ var c = function(x,y) {
 
 c(1,2,3); // 输出3 2 function(x,y) {console.log(arguments.length,arguments.callee.length,arguments.callee)}
 ```
-   
