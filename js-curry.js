@@ -6,22 +6,21 @@ var arr2 = new Array("4", "5", "6");
 Array.prototype.push.apply(arr1, arr2);
 console.log(arr1);
 
-var overtime = (function () {
-    var args = [];
+var overtime = (function() {
+  var args = [];
 
-    return function () {
-        if (arguments.length === 0) {
-            var time = 0;
+  return function() {
+    if (arguments.length === 0) {
+      var time = 0;
 
-            for (var i = 0, l = args.length; i < l; i++) {
-                time += args[i];
-            }
-            return time;
-        } else {
-
-            [].push.apply(args, arguments);
-        }
-    };
+      for (var i = 0, l = args.length; i < l; i++) {
+        time += args[i];
+      }
+      return time;
+    } else {
+      [].push.apply(args, arguments);
+    }
+  };
 })();
 
 overtime(3.5); // 第一天
@@ -30,7 +29,6 @@ overtime(2.1); // 第三天
 //...
 
 console.log(overtime()); // 10.1
-
 
 // ==========================================================================================================
 // 在计算机科学中，柯里化（英语：Currying），又译为卡瑞化或加里化，是把接受多个参数的函数变换成接受一个单一参数（最初函
@@ -43,14 +41,14 @@ console.log(overtime()); // 10.1
 // ==========================================================================================================
 
 function fn() {}
-fn.valueOf = () => console.log('valueof');
+fn.valueOf = () => console.log("valueof");
 console.log(fn); // valueof
 
 // ==========================================================================================================
 const mul = x => {
-    const result = y => mul(x * y); // 递归调用mul
-    result.valueOf = () => x;
-    return result;
+  const result = y => mul(x * y); // 递归调用mul
+  result.valueOf = () => x;
+  return result;
 };
 console.log(mul(2)(3)); // 6
 
@@ -58,7 +56,7 @@ console.log(mul(2)(3)); // 6
 // 在result函数的valueOf里保存着 由上一次x * y 传进来的结果x, 也就是上一次x*y 会作为这一次的输出 依然叫x
 
 // 第一次mul(2) 此时 x为2  return result
-// result 为 result = y => mul(2 * y); 
+// result 为 result = y => mul(2 * y);
 // 第二次 mul(2)(3) 等价于 第一个mul返回的result(3), result执行 => mul(2 * 3) 再次调用mul 将2*3 = 6 的结果作为mul参数
 // 最后mul(6) x = 6 在返回一个新函数result 此时result的valueOf = () => 6
 
@@ -67,41 +65,41 @@ console.log(mul(2)(3)); // 6
 // ==========================================================================================================
 // curry 将多参数函数转换为接收单一参数的函数
 // ==========================================================================================================
-let Fn = function (a, b, c) { // 多参数函数
-    return a + b + c;
-}
+let Fn = function(a, b, c) {
+  // 多参数函数
+  return a + b + c;
+};
 
 function curry(Fn) {
-    let args = []; // 收集参数
-    let len = Fn.length;
-    return function fe() {
-        args = args.concat([].slice.call(arguments, 0));
-        if (args.length === len) {
-            return Fn.apply(null, args);
-        }
-        return fe;
-    };
+  let args = []; // 收集参数
+  let len = Fn.length;
+  return function fe() {
+    args = args.concat([].slice.call(arguments, 0));
+    if (args.length === len) {
+      return Fn.apply(null, args);
+    }
+    return fe;
+  };
 }
 
 console.log(curry(Fn)(1)(2)(3)); // 6
-
 
 // ==========================================================================================================
 // 收集参数 延迟执行 到达指定次数才执行
 // ==========================================================================================================
 // 参数收集 指定次数后执行
 function fn(...rest) {
-    console.log(rest);
+  console.log(rest);
 }
 
 function after(fn, time = 1) {
-    let params = [];
-    return function (...rest) {
-        params = [...params, ...rest];
-        if (--time === 0) {
-            fn.apply(this, params);
-        }
-    };
+  let params = [];
+  return function(...rest) {
+    params = [...params, ...rest];
+    if (--time === 0) {
+      fn.apply(this, params);
+    }
+  };
 }
 let newFn = after(fn, 3); // 执行3次 内部fn才会执行
 newFn(2);
